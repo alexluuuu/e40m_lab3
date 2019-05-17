@@ -13,7 +13,7 @@ import tkinter as tk
 import time 
 import os 
 
-def update_board_state(snake, food):#, ser): 
+def update_board_state(snake, food, ser): 
     """updates board state using serial output
     
     Args:
@@ -28,15 +28,17 @@ def update_board_state(snake, food):#, ser):
 
     grid[food[0]][food[0]] = '1'
 
-    with open(test_file, "w") as f: 
-	    for row in grid:
-	    	# print(struct.pack(int(''.join(row), 2))) 
-	    	# print("".join(row).encode())
-	    	f.write("".join(row))
-	    	f.write("\n")
-	    	# ser.write("".join(row).encode())
-	    f.write("\n")
-    #ser.write("\n".encode())
+    # with open(test_file, "w") as f: 
+    # for row in grid:
+    grid_str = "".join(["".join(row) for row in grid]) + "\n"
+    	# print(struct.pack(int(''.join(row), 2))) 
+    	# print("".join(row).encode())
+    	# f.write("".join(row))
+    	# f.write("\n")
+    	# ser.write("".join(row))
+	    # f.write("\n")
+	ser.write(grid_str)
+    # ser.write("\n")
 
 
 
@@ -60,7 +62,7 @@ def curses_main(ser):
 
 	win.addch(food[0], food[1], '*')                                   # Prints the food
 
-	update_board_state(snake, food)#, ser)
+	update_board_state(snake, food, ser)
 
 	while key != 27:                                                   # While Esc key is not pressed
 		win.border(0)
@@ -111,7 +113,7 @@ def curses_main(ser):
 			win.addch(last[0], last[1], ' ')
 
 		win.addch(snake[0][0], snake[0][1], '#')
-		update_board_state(snake, food)#, ser)
+		update_board_state(snake, food, ser)
 		
 	curses.nocbreak()
 	win.keypad(False)
@@ -147,15 +149,15 @@ def tk_main():
 
 
 if __name__ == "__main__": 
-	# ser = serial.Serial(
-	#     port='\\\\.\\COM4',
-	#     baudrate=115200,
-	#     parity=serial.PARITY_ODD,
-	#     stopbits=serial.STOPBITS_ONE,
-	#     bytesize=serial.EIGHTBITS
-	# )
+	ser = serial.Serial(
+	    port='\\\\.\\COM4',
+	    baudrate=115200,
+	    parity=serial.PARITY_ODD,
+	    stopbits=serial.STOPBITS_ONE,
+	    bytesize=serial.EIGHTBITS
+	)
 
-	ser = None
+	# ser = None
 	# update_board_state([[3,5], [3,4], [3,3]] , [5,5])
 	# curses_main()
 	wrapper(curses_main(ser))
