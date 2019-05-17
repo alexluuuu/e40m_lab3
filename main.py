@@ -14,31 +14,31 @@ import time
 import os 
 
 def update_board_state(snake, food, ser): 
-    """updates board state using serial output
-    
-    Args:
-        snake (TYPE): Description
-        food (TYPE): Description
-    """
-    test_file = "out.txt"
-    grid = [['0' for i in range(8)] for j in range(8)]
+	"""updates board state using serial output
+	
+	Args:
+		snake (TYPE): Description
+		food (TYPE): Description
+	"""
+	test_file = "out.txt"
+	grid = [['0' for i in range(8)] for j in range(8)]
 
-    for part in snake: 
-    	grid[part[0]][part[1]] = '1'
+	for part in snake: 
+		grid[part[0]][part[1]] = '1'
 
-    grid[food[0]][food[0]] = '1'
+	grid[food[0]][food[0]] = '1'
 
-    # with open(test_file, "w") as f: 
-    # for row in grid:
-    grid_str = "".join(["".join(row) for row in grid]) + "\n"
-    	# print(struct.pack(int(''.join(row), 2))) 
-    	# print("".join(row).encode())
-    	# f.write("".join(row))
-    	# f.write("\n")
-    	# ser.write("".join(row))
-	    # f.write("\n")
+	# with open(test_file, "w") as f: 
+	# for row in grid:
+	grid_str = "".join(["".join(row) for row in grid]) + "\n"
+		# print(struct.pack(int(''.join(row), 2))) 
+		# print("".join(row).encode())
+		# f.write("".join(row))
+		# f.write("\n")
+		# ser.write("".join(row))
+		# f.write("\n")
 	ser.write(grid_str)
-    # ser.write("\n")
+	# ser.write("\n")
 
 
 
@@ -150,11 +150,11 @@ def tk_main():
 
 if __name__ == "__main__": 
 	ser = serial.Serial(
-	    port='\\\\.\\COM4',
-	    baudrate=115200,
-	    parity=serial.PARITY_ODD,
-	    stopbits=serial.STOPBITS_ONE,
-	    bytesize=serial.EIGHTBITS
+		port='\\\\.\\COM4',
+		baudrate=115200,
+		parity=serial.PARITY_ODD,
+		stopbits=serial.STOPBITS_ONE,
+		bytesize=serial.EIGHTBITS
 	)
 
 	# ser = None
