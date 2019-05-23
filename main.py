@@ -37,9 +37,8 @@ def update_board_state(snake, food, ser):
 		# f.write("\n")
 		# ser.write("".join(row))
 		# f.write("\n")
-	ser.write(grid_str)
+	ser.write(grid_str.encode())
 	# ser.write("\n")
-
 
 
 def curses_main(ser): 
@@ -150,7 +149,7 @@ def tk_main():
 
 if __name__ == "__main__": 
 	ser = serial.Serial(
-		port='\\\\.\\COM4',
+		port='\\\\.\\COM6',
 		baudrate=115200,
 		parity=serial.PARITY_ODD,
 		stopbits=serial.STOPBITS_ONE,
