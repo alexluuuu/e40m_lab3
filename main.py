@@ -12,6 +12,7 @@ from random import randint
 import tkinter as tk
 import time 
 import os 
+import sys
 
 def update_board_state(snake, food, ser): 
 	"""updates board state using serial output
@@ -20,6 +21,9 @@ def update_board_state(snake, food, ser):
 		snake (TYPE): Description
 		food (TYPE): Description
 	"""
+	if ser is None: 
+		return 
+
 	test_file = "out.txt"
 	grid = [['0' for i in range(8)] for j in range(8)]
 
@@ -28,17 +32,8 @@ def update_board_state(snake, food, ser):
 
 	grid[food[0]][food[0]] = '1'
 
-	# with open(test_file, "w") as f: 
-	# for row in grid:
 	grid_str = "".join(["".join(row) for row in grid]) + "\n"
-		# print(struct.pack(int(''.join(row), 2))) 
-		# print("".join(row).encode())
-		# f.write("".join(row))
-		# f.write("\n")
-		# ser.write("".join(row))
-		# f.write("\n")
 	ser.write(grid_str.encode())
-	# ser.write("\n")
 
 
 def curses_main(ser): 
@@ -46,7 +41,7 @@ def curses_main(ser):
 
 	"""
 	curses.initscr()
-	win = curses.newwin(10, 8, 0, 0)
+	win = curses.newwin(8, 10, 0, 0)
 	win.keypad(1)
 	curses.noecho()
 	curses.curs_set(0)
@@ -64,7 +59,7 @@ def curses_main(ser):
 	update_board_state(snake, food, ser)
 
 	while key != 27:                                                   # While Esc key is not pressed
-		win.border(0)
+# 		win.border(0)
 		win.timeout(150 - (len(snake)//5 + len(snake)//10)%120)          # Increases the speed of Snake as its length increases
 		
 		prevKey = key                                                  # Previous key pressed
@@ -83,17 +78,21 @@ def curses_main(ser):
 			key = prevKey
 
 		# Calculates the new coordinates of the head of the snake. NOTE: len(snake) increases.
-		# This is taken care of later at [1].
 		snake.insert(0, [snake[0][0] + (key == KEY_DOWN and 1) + (key == KEY_UP and -1), snake[0][1] + (key == KEY_LEFT and -1) + (key == KEY_RIGHT and 1)])
 
 		# If snake crosses the boundaries, make it enter from the other side
-		if snake[0][0] == 0: snake[0][0] = 8
-		if snake[0][1] == 0: snake[0][1] = 8
-		if snake[0][0] == 8: snake[0][0] = 0
-		if snake[0][1] == 8: snake[0][1] = 0
+		# note that snake[0] gives [x,y] list of snake head
+		# snake[0][0] is x coord
+		# snake[0][1] is y coord
 
-		# Exit if snake crosses the boundaries (Uncomment to enable)
-		#if snake[0][0] == 0 or snake[0][0] == 19 or snake[0][1] == 0 or snake[0][1] == 59: break
+		if snake[0][0] == 0:			# check if snake is at top row; if so, move head to bottom row 
+			snake[0][0] = 7
+		if snake[0][0] == 8: 
+			snake[0][0] = 1
+		if snake[0][1] == 0: 			# check if snake is at right column; if so, move head to left column
+			snake[0][1] = 7
+		if snake[0][1] == 8: 
+			snake[0][1] = 1
 
 		# If snake runs over itself
 		if snake[0] in snake[1:]: 
@@ -148,15 +147,15 @@ def tk_main():
 
 
 if __name__ == "__main__": 
-	ser = serial.Serial(
-		port='\\\\.\\COM6',
-		baudrate=115200,
-		parity=serial.PARITY_ODD,
-		stopbits=serial.STOPBITS_ONE,
-		bytesize=serial.EIGHTBITS
-	)
+	# ser = serial.Serial(
+	# 	port='\\\\.\\COM6',
+	# 	baudrate=115200,
+	# 	parity=serial.PARITY_ODD,
+	# 	stopbits=serial.STOPBITS_ONE,
+	# 	bytesize=serial.EIGHTBITS
+	# )
 
-	# ser = None
+	ser = None
 	# update_board_state([[3,5], [3,4], [3,3]] , [5,5])
 	# curses_main()
 	wrapper(curses_main(ser))
