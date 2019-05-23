@@ -13,6 +13,7 @@ import tkinter as tk
 import time 
 import os 
 import sys
+from render_text import render_text
 
 from board_letters import get_letter
 
@@ -52,18 +53,11 @@ def display_score_state(win, ser, score):
 	Uses function in board_letters.py to retrieve the grid state for each letter in the target message
 
 	"""
-	message = "your score was " + str(score)
-	if ser is not None: 
-		letter_arrays = []
-		for letter in message: 
-			letter_arr = get_letter(letter)
-			letter_arrays.append(letter_arr)
-
-		for arr in letter_arrays: 
-			time.sleep(.3)
-			grid_str = "".join(["".join(row) for row in arr]) + "\n"
-			ser.write(grid_str.encode())
-
+	message = "Your score: " + str(score)
+	render_text(message, ser)
+	# Display score a couple of extra times for user pleasure.
+	render_text(str(score),ser)
+	render_text(str(score),ser)
 	return 
 
 
@@ -90,7 +84,6 @@ def curses_main(ser):
 	update_board_state(snake, food, ser)
 
 	while key != 27:                                                   # While Esc key is not pressed
-# 		win.border(0)
 		win.timeout(300 - (len(snake)//5 + len(snake)//10)%120)          # Increases the speed of Snake as its length increases
 		
 		prevKey = key                                                  # Previous key pressed
@@ -130,7 +123,6 @@ def curses_main(ser):
 
 		# If snake runs over itself
 		if snake[0] in snake[1:]: 
-			display_score_state(win, ser, score)
 			break
 
 		if snake[0] == food:                                            # When snake eats the food
@@ -196,5 +188,7 @@ if __name__ == "__main__":
 	# ser = None
 	# update_board_state([[3,5], [3,4], [3,3]] , [5,5])
 	# curses_main()
+	render_text("Welcome To Snake!", ser)
 	wrapper(curses_main(ser))
+	render_text("Come back again!", ser)
 	# tk_main()
