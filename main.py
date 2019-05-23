@@ -14,6 +14,8 @@ import time
 import os 
 import sys
 
+from board_letters import get_letter
+
 
 def update_board_state(snake, food, ser): 
 	"""updates board state using serial output
@@ -37,8 +39,40 @@ def update_board_state(snake, food, ser):
 	ser.write(grid_str.encode())
 
 
-def display_score_state(food, ser):  
-	pass
+def display_score_state(win, ser, score):  
+	"""display_score_state
+	
+	Args:
+	    win (curses window): window for curses, used for debugging dispaly simulation
+	    ser (serial monitor object): used for communicating with the board through serial output
+	    score (int): score obtained through playing snake
+
+
+	Function used to display the score state after you've died in snake :) 
+	Uses function in board_letters.py to retrieve the grid state for each letter in the target message
+
+	"""
+	message = "your score was " + str(score)
+
+	# for arr in letter_arrays:
+	# 	win.timeout(500)
+	# 	for i, row in enumerate(arr):
+	# 		for j, val in enumerate(row): 
+	# 			if val == "1": 
+	# 				win.addch(j, i, '*')
+
+	if ser is not None: 
+		letter_arrays = []
+		for letter in message: 
+			letter_arr = get_letter(letter)
+			letter_arrays.append(letter_arr)
+
+		for arr in letter_arrays: 
+			time.sleep(.3)
+			ser.write("".join(["".join(row) for row in arr]).encode())
+
+	return 
+
 
 def curses_main(ser): 
 	"""runs the snake program
@@ -103,6 +137,7 @@ def curses_main(ser):
 
 		# If snake runs over itself
 		if snake[0] in snake[1:]: 
+			display_score_state(win, ser, score)
 			break
 
 		if snake[0] == food:                                            # When snake eats the food
@@ -121,6 +156,7 @@ def curses_main(ser):
 		update_board_state(snake, food, ser)
 	
 
+	display_score_state(win, ser, score)
 
 	curses.nocbreak()
 	win.keypad(False)
@@ -153,6 +189,7 @@ def tk_main():
 	# don't show the tk window
 	# root.withdraw()
 	root.mainloop()
+
 
 if __name__ == "__main__": 
 	ser = serial.Serial(
