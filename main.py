@@ -53,14 +53,6 @@ def display_score_state(win, ser, score):
 
 	"""
 	message = "your score was " + str(score)
-
-	# for arr in letter_arrays:
-	# 	win.timeout(500)
-	# 	for i, row in enumerate(arr):
-	# 		for j, val in enumerate(row): 
-	# 			if val == "1": 
-	# 				win.addch(j, i, '*')
-
 	if ser is not None: 
 		letter_arrays = []
 		for letter in message: 
@@ -69,7 +61,8 @@ def display_score_state(win, ser, score):
 
 		for arr in letter_arrays: 
 			time.sleep(.3)
-			ser.write("".join(["".join(row) for row in arr]).encode())
+			grid_str = "".join(["".join(row) for row in arr]) + "\n"
+			ser.write(grid_str.encode())
 
 	return 
 
