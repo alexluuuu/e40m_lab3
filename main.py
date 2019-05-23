@@ -15,7 +15,6 @@ import os
 import sys
 
 
-
 def update_board_state(snake, food, ser): 
 	"""updates board state using serial output
 	
@@ -27,15 +26,16 @@ def update_board_state(snake, food, ser):
 		return 
 
 	test_file = "out.txt"
-	grid = [['0' for i in range(8)] for j in range(8)]
+	grid = [['0' for i in range(10)] for j in range(10)]
 
 	for part in snake: 
 		grid[part[0]][part[1]] = '1'
 
 	grid[food[0]][food[0]] = '1'
 
-	grid_str = "".join(["".join(row) for row in grid]) + "\n"
+	grid_str = "".join(["".join(row[1:-1]) for row in grid[1:-1]]) + "\n"
 	ser.write(grid_str.encode())
+
 
 def display_score_state(food, ser):  
 	pass
@@ -45,7 +45,7 @@ def curses_main(ser):
 
 	"""
 	curses.initscr()
-	win = curses.newwin(8, 8, 0, 0)
+	win = curses.newwin(10, 10, 0, 0)
 	win.keypad(1)
 	curses.noecho()
 	curses.curs_set(0)
@@ -90,12 +90,12 @@ def curses_main(ser):
 		# snake[0][1] is y coord
 
 		if snake[0][0] == 0:			# check if snake is at top row; if so, move head to bottom row 
-			snake[0][0] = 6
-		if snake[0][0] == 7: 
+			snake[0][0] = 8
+		if snake[0][0] == 9: 
 			snake[0][0] = 1
 		if snake[0][1] == 0: 			# check if snake is at right column; if so, move head to left column
-			snake[0][1] = 6
-		if snake[0][1] == 7: 
+			snake[0][1] = 8
+		if snake[0][1] == 9: 
 			snake[0][1] = 1
 
 		# if snake[0][0] == 0 or snake[0][0] == 8 or snake[0][1] == 0 or snake[0][1] == 59: 
@@ -109,7 +109,7 @@ def curses_main(ser):
 			food = []
 			score += 1
 			while food == []:
-				food = [randint(2, 6), randint(2, 6)]                 # Calculating next food's coordinates
+				food = [randint(2, 7), randint(2, 7)]                 # Calculating next food's coordinates
 				if food in snake: 
 					food = []
 			win.addch(food[0], food[1], '*')
@@ -120,6 +120,7 @@ def curses_main(ser):
 		win.addch(snake[0][0], snake[0][1], '#')
 		update_board_state(snake, food, ser)
 	
+
 
 	curses.nocbreak()
 	win.keypad(False)
