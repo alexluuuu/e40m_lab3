@@ -40,7 +40,6 @@ def update_board_state(snake, food, ser):
 	ser.write(grid_str.encode())
 	# ser.write("\n")
 
-
 def curses_main(ser): 
 	"""runs the snake program
 
@@ -145,7 +144,6 @@ def tk_main():
 	# don't show the tk window
 	# root.withdraw()
 	root.mainloop()
-
 
 if __name__ == "__main__": 
 	ser = serial.Serial(
