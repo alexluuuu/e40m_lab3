@@ -40,7 +40,7 @@ def curses_main(ser):
 
 	"""
 	curses.initscr()
-	win = curses.newwin(8, 10, 0, 0)
+	win = curses.newwin(8, 8, 0, 0)
 	win.keypad(1)
 	curses.noecho()
 	curses.curs_set(0)
@@ -145,15 +145,14 @@ def tk_main():
 	root.mainloop()
 
 if __name__ == "__main__": 
-	# ser = serial.Serial(
-	# 	port='\\\\.\\COM6',
-	# 	baudrate=115200,
-	# 	parity=serial.PARITY_ODD,
-	# 	stopbits=serial.STOPBITS_ONE,
-	# 	bytesize=serial.EIGHTBITS
-	# )
+	ser = serial.Serial(
+		port='\\\\.\\COM6',
+		baudrate=115200,
+		parity=serial.PARITY_ODD,
+		stopbits=serial.STOPBITS_ONE,
+		bytesize=serial.EIGHTBITS
+	)
 
-	ser = None
 	# update_board_state([[3,5], [3,4], [3,3]] , [5,5])
 	# curses_main()
 	wrapper(curses_main(ser))
