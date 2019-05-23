@@ -14,6 +14,8 @@ import time
 import os 
 import sys
 
+
+
 def update_board_state(snake, food, ser): 
 	"""updates board state using serial output
 	
@@ -35,6 +37,9 @@ def update_board_state(snake, food, ser):
 	grid_str = "".join(["".join(row) for row in grid]) + "\n"
 	ser.write(grid_str.encode())
 
+def display_score_state(food, ser):  
+	pass
+
 def curses_main(ser): 
 	"""runs the snake program
 
@@ -50,7 +55,7 @@ def curses_main(ser):
 	key = KEY_RIGHT                                                    # Initializing values
 	score = 0
 
-	snake = [[3,5], [3,4], [3,3]]                                     # Initial snake co-ordinates
+	snake = [[3,5], [3,4]]                                     # Initial snake co-ordinates
 	food = [5,5]                                                     # First food co-ordinates
 
 	win.addch(food[0], food[1], '*')                                   # Prints the food
@@ -59,7 +64,7 @@ def curses_main(ser):
 
 	while key != 27:                                                   # While Esc key is not pressed
 # 		win.border(0)
-		win.timeout(150 - (len(snake)//5 + len(snake)//10)%120)          # Increases the speed of Snake as its length increases
+		win.timeout(300 - (len(snake)//5 + len(snake)//10)%120)          # Increases the speed of Snake as its length increases
 		
 		prevKey = key                                                  # Previous key pressed
 		event = win.getch()
@@ -85,13 +90,16 @@ def curses_main(ser):
 		# snake[0][1] is y coord
 
 		if snake[0][0] == 0:			# check if snake is at top row; if so, move head to bottom row 
-			snake[0][0] = 7
-		if snake[0][0] == 8: 
+			snake[0][0] = 6
+		if snake[0][0] == 7: 
 			snake[0][0] = 1
 		if snake[0][1] == 0: 			# check if snake is at right column; if so, move head to left column
-			snake[0][1] = 7
-		if snake[0][1] == 8: 
+			snake[0][1] = 6
+		if snake[0][1] == 7: 
 			snake[0][1] = 1
+
+		# if snake[0][0] == 0 or snake[0][0] == 8 or snake[0][1] == 0 or snake[0][1] == 59: 
+		# 	break
 
 		# If snake runs over itself
 		if snake[0] in snake[1:]: 
@@ -101,7 +109,7 @@ def curses_main(ser):
 			food = []
 			score += 1
 			while food == []:
-				food = [randint(1, 7), randint(1, 7)]                 # Calculating next food's coordinates
+				food = [randint(2, 6), randint(2, 6)]                 # Calculating next food's coordinates
 				if food in snake: 
 					food = []
 			win.addch(food[0], food[1], '*')
@@ -111,7 +119,8 @@ def curses_main(ser):
 
 		win.addch(snake[0][0], snake[0][1], '#')
 		update_board_state(snake, food, ser)
-		
+	
+
 	curses.nocbreak()
 	win.keypad(False)
 	curses.echo()
