@@ -8,4 +8,6 @@
 pyserial
 curses
 random
+PIL
+time
 ```
