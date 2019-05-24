@@ -64,20 +64,17 @@ def render_text(text, ser):
     # Traverse all frames col by col
     frame = [['0' for i in range(8)] for j in range(8)]
     for startCol in range (0,totalCols):
-        if startCol % 8 == 0:
-            render(charsToDisplay[startCol//8], ser)
-        else: 
-            idx_in_letter = startCol % 8
-            # Portion from first letter
-            for col in range(idx_in_letter, 8):
-                for row in range(0,8):
-                    frame[row][col-idx_in_letter] = charsToDisplay[startCol//8][row][col]
-            # Portion from next letter
-            for col in range(0, idx_in_letter):
-                for row in range(0,8):
-                    frame[row][col + 8 - idx_in_letter ] = charsToDisplay[startCol //8 + 1][row][col]
-            render(frame, ser)
-        time.sleep(0.08)
+        idx_in_letter = startCol % 8
+        # Portion from first letter
+        for col in range(idx_in_letter, 8):
+            for row in range(0,8):
+                frame[row][col-idx_in_letter] = charsToDisplay[startCol//8][row][col]
+        # Portion from next letter
+        for col in range(0, idx_in_letter):
+            for row in range(0,8):
+                frame[row][col + 8 - idx_in_letter ] = charsToDisplay[startCol //8 + 1][row][col]
+        render(frame, ser)
+        time.sleep(0.09)
 
 
 def render(grid, ser) :

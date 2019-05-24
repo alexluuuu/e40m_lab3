@@ -15,8 +15,6 @@ import sys
 
 # internal dependencies
 from render_text import render_text
-from board_letters import get_letter
-
 
 def update_board_state(snake, food, ser): 
 	"""updates board state using serial output
@@ -66,10 +64,9 @@ def display_score_state(win, ser, score):
 	render_text(message, ser)
 
 	# Display score only a couple of extra times for extra spice
+	time.sleep(1)
 	render_text(str(score), ser)
-	render_text(str(score), ser)
-
-	return 
+	time.sleep(1)
 
 
 def curses_main(ser): 
@@ -209,7 +206,10 @@ if __name__ == "__main__":
 	render_text("Welcome To Snake!", ser)
 
 	# game main
-	wrapper(curses_main(ser))
-
+	try:
+		wrapper(curses_main(ser))
+	except:
+		render_text("Come back again!", ser)
+		pass
 	# exit message
 	render_text("Come back again!", ser)
