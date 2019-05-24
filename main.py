@@ -2,19 +2,19 @@
 
 Controller + interface for playing snake
 """
+
+# external dependencies
 import curses
 import serial
 from curses import KEY_RIGHT, KEY_LEFT, KEY_UP, KEY_DOWN
 from curses import wrapper
-
 from random import randint
-
-import tkinter as tk
 import time 
 import os 
 import sys
-from render_text import render_text
 
+# internal dependencies
+from render_text import render_text
 from board_letters import get_letter
 
 
@@ -22,22 +22,30 @@ def update_board_state(snake, food, ser):
 	"""updates board state using serial output
 	
 	Args:
-		snake (TYPE): Description
-		food (TYPE): Description
+		snake (List(List)): list of lists representing (x,y) snake pos coordinates
+		food (List): (x,y) position representing food location
 	"""
+	# for debugging purposes, return if we can't write to Serial monitor
 	if ser is None: 
 		return 
 
-	test_file = "out.txt"
+	# initialize empty grid 
 	grid = [['0' for i in range(10)] for j in range(10)]
 
+	# highlight grid entries with snake 
 	for part in snake: 
 		grid[part[0]][part[1]] = '1'
 
+	# add food to grid
 	grid[food[0]][food[0]] = '1'
 
+	# reshape grid into 1D, convert to string, add linebreak
 	grid_str = "".join(["".join(row[1:-1]) for row in grid[1:-1]]) + "\n"
+
+	# write Serial output
 	ser.write(grid_str.encode())
+
+	return
 
 
 def display_score_state(win, ser, score):  
@@ -48,16 +56,19 @@ def display_score_state(win, ser, score):
 	    ser (serial monitor object): used for communicating with the board through serial output
 	    score (int): score obtained through playing snake
 
-
+ 
 	Function used to display the score state after you've died in snake :) 
 	Uses function in board_letters.py to retrieve the grid state for each letter in the target message
 
 	"""
+	# produce message, display
 	message = "Your score: " + str(score)
 	render_text(message, ser)
-	# Display score a couple of extra times for user pleasure.
-	render_text(str(score),ser)
-	render_text(str(score),ser)
+
+	# Display score only a couple of extra times for extra spice
+	render_text(str(score), ser)
+	render_text(str(score), ser)
+
 	return 
 
 
@@ -65,6 +76,8 @@ def curses_main(ser):
 	"""runs the snake program
 
 	"""
+
+	# initialize curses display
 	curses.initscr()
 	win = curses.newwin(10, 10, 0, 0)
 	win.keypad(1)
@@ -73,32 +86,35 @@ def curses_main(ser):
 	win.border(0)
 	win.nodelay(1)
 
-	key = KEY_RIGHT                                                    # Initializing values
+	key = KEY_RIGHT                                                  
 	score = 0
 
-	snake = [[3,5], [3,4]]                                     # Initial snake co-ordinates
-	food = [5,5]                                                     # First food co-ordinates
+	snake = [[3,5], [3,4]]                                     
+	food = [5,5]                                                     
 
-	win.addch(food[0], food[1], '*')                                   # Prints the food
+	win.addch(food[0], food[1], '*')                                   
 
 	update_board_state(snake, food, ser)
 
-	while key != 27:                                                   # While Esc key is not pressed
-		win.timeout(300 - (len(snake)//5 + len(snake)//10)%120)          # Increases the speed of Snake as its length increases
+	# While Esc key is not pressed
+	while key != 27:                                                   
+		win.timeout(300 - (len(snake)//5 + len(snake)//10)%120)          
 		
-		prevKey = key                                                  # Previous key pressed
+		prevKey = key                                                  
 		event = win.getch()
 		key = key if event == -1 else event 
 
 
-		if key == ord(' '):                                            # If SPACE BAR is pressed, wait for another
-			key = -1                                                   # one (Pause/Resume)
+		# If SPACE BAR is pressed, wait for another
+		if key == ord(' '):                                            
+			key = -1                                                   
 			while key != ord(' '):
 				key = win.getch()
 			key = prevKey
 			continue
 
-		if key not in [KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, 27]:     # If an invalid key is pressed
+		# If an invalid key is pressed
+		if key not in [KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, 27]:     
 			key = prevKey
 
 		# Calculates the new coordinates of the head of the snake. NOTE: len(snake) increases.
@@ -118,26 +134,33 @@ def curses_main(ser):
 		if snake[0][1] == 9: 
 			snake[0][1] = 1
 
-		# if snake[0][0] == 0 or snake[0][0] == 8 or snake[0][1] == 0 or snake[0][1] == 59: 
-		# 	break
-
 		# If snake runs over itself
 		if snake[0] in snake[1:]: 
 			break
 
-		if snake[0] == food:                                            # When snake eats the food
+		
+		# at each iteration, check if we've gotten the food 
+		# if we have gotten the food: 			
+		# 	produce new food, don't change snake
+		# otherwise:							
+		# 	leave food alone, take off the end of the snake to simulate crawling motion
+		if snake[0] == food:                                            
 			food = []
 			score += 1
 			while food == []:
-				food = [randint(2, 7), randint(2, 7)]                 # Calculating next food's coordinates
+				# next food position
+				food = [randint(2, 7), randint(2, 7)]                 
 				if food in snake: 
 					food = []
 			win.addch(food[0], food[1], '*')
 		else:    
-			last = snake.pop()                                          # [1] If it does not eat the food, length decreases
+			last = snake.pop()                                          
 			win.addch(last[0], last[1], ' ')
 
+		# update the head of the snake
 		win.addch(snake[0][0], snake[0][1], '#')
+
+		# write to the board
 		update_board_state(snake, food, ser)
 	
 
@@ -167,16 +190,9 @@ def key(event):
 		print( 'Special Key %r' % event.keysym )
 
 
-def tk_main(): 
-	root = tk.Tk()
-	print( "Press a key (Escape key to exit):" )
-	root.bind_all('<Key>', key)
-	# don't show the tk window
-	# root.withdraw()
-	root.mainloop()
-
-
 if __name__ == "__main__": 
+
+	# initialize Serial monitor
 	ser = serial.Serial(
 		port='\\\\.\\COM6',
 		baudrate=115200,
@@ -185,10 +201,15 @@ if __name__ == "__main__":
 		bytesize=serial.EIGHTBITS
 	)
 
+	# for debugging: 
 	# ser = None
 	# update_board_state([[3,5], [3,4], [3,3]] , [5,5])
-	# curses_main()
+
+	# welcome message
 	render_text("Welcome To Snake!", ser)
+
+	# game main
 	wrapper(curses_main(ser))
+
+	# exit message
 	render_text("Come back again!", ser)
-	# tk_main()

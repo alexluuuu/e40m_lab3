@@ -1,6 +1,7 @@
 """board_letters.py
 
 
+	one version with hardcoded characters for debugging display of characters/string messages onto board
 """
 
 letter_dict = {
@@ -46,12 +47,15 @@ letter_dict = {
 def get_letter(letter_string): 
     """Summary
     
-    Parameters
-    ----------
-    letter_string : TYPE
-        Description
+    Args:
+        letter_string (str): expects a single character in the keys of letters_dict
+    
+    Returns:
+        List(String): Returns a list of 8 strings of length 8 representing grid values
     """
 
     letter_grid = letter_dict[letter_string]
 
     return letter_grid
+
+   
